@@ -21,7 +21,7 @@ public class DBConnect {
     public DBConnect(){
         try{
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/crawl_footprint", "root", "");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/11dtech", "root", "");
             statement = connection.createStatement();   
         }catch(Exception ex){
             System.out.println("Error: " + ex);
@@ -34,26 +34,12 @@ public class DBConnect {
     
     public void createTable() throws Exception{
         if(connection != null){
-            String tableCreate = "CREATE TABLE IF NOT EXISTS `crawl_footprint`.`domain` ( `id` INT NOT NULL AUTO_INCREMENT , `domainHash` CHAR(64) NOT NULL , `domainUrl` VARCHAR(500) NOT NULL , `activated` INT NOT NULL , PRIMARY KEY (`domainHash`), INDEX (`id`), UNIQUE (`domainUrl`)) ENGINE = InnoDB;";
+            String tableCreate = "CREATE TABLE IF NOT EXISTS `11dtech`.`domain` ( `id` INT NOT NULL AUTO_INCREMENT , `domainHash` CHAR(64) NOT NULL , `domainUrl` VARCHAR(500) NOT NULL , `activated` INT NOT NULL , PRIMARY KEY (`domainHash`), INDEX (`id`), UNIQUE (`domainUrl`)) ENGINE = InnoDB;";
             PreparedStatement create = connection.prepareStatement(tableCreate);
             create.executeUpdate();
         }else{
             System.out.println("Not connected to a database!");
         }
-    }
-    
-    public PreparedStatement pendDomain(PreparedStatement pend, String domainUrl) throws SQLException, Exception{ //post the dtected domain
-        if(connection != null){
-            String domainHash = Hasher.toSha256(domainUrl);
-            int activated = 0;
-            String insertion = "INSERT IGNORE `domain` (`id`,`domainHash`,`domainUrl`,`activated`) VALUES (NULL, '" + domainHash + "','"+domainUrl+"','"+activated+"')";
-            pend.addBatch(insertion);
-            //PreparedStatement insert = connection.prepareStatement(insertion);
-            //insert.execute();
-        }else{
-            System.out.println("Not connected to a database!");
-        }
-        return pend;
     }
     
     public void pendDomainExecute(PreparedStatement pend){
@@ -77,17 +63,6 @@ public class DBConnect {
         }
     }
     
-    public PreparedStatement activate(PreparedStatement active, Domain domain) throws SQLException{
-        if(connection != null){
-            String domainHash = domain.getdomainHash();
-            String update = "UPDATE `domain` SET `activated` = '1' WHERE `domain`.`domainHash` = '"+domainHash+"'";
-            active.addBatch(update);
-        }else{
-            System.out.println("Not connected to a database!");
-        }
-        return active;
-    }
-    
     public void activateDomainExecute(PreparedStatement active){
         try {
             active.executeBatch();
@@ -100,7 +75,7 @@ public class DBConnect {
         //only return no more than 1000 pending links each time to prevent the list become too big
         List pendingList = new ArrayList();
         if(connection != null){
-            PreparedStatement getPend = connection.prepareStatement("SELECT `domainUrl` FROM `domain` WHERE `activated`=0 LIMIT 1000");
+            PreparedStatement getPend = connection.prepareStatement("SELECT `domainUrl` FROM `domain` WHERE `activated`=0 LIMIT 100");
             result = getPend.executeQuery();
             // put query results into a list
             while(result.next()){ 
@@ -115,4 +90,20 @@ public class DBConnect {
         return pendingArray;
     }
     
+    
+    public int countCrawled() throws SQLException{
+
+        PreparedStatement  countVisited = connection.prepareStatement("SELECT COUNT(activated) FROM `domain` WHERE `activated` = 1 ");
+        ResultSet crawled = countVisited.executeQuery();
+        crawled.next(); //No idea why adding this line would make getInt to work
+        return crawled.getInt(1);
+    }
+    
+    public int countDetected() throws SQLException{
+
+        PreparedStatement  countFound = connection.prepareStatement("SELECT COUNT(activated) FROM `domain` WHERE `activated` = 0 ");
+        ResultSet found = countFound.executeQuery();
+        found.next();
+        return found.getInt(1);
+    }
 }

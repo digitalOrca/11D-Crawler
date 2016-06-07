@@ -5,9 +5,11 @@
         <group>
             <file>file:/E:/Technical%20Program/NetBeans%208.1/NetBeansProjects/11dcrawler/src/crawlerCore/Hasher.java</file>
             <file>file:/E:/Technical%20Program/NetBeans%208.1/NetBeansProjects/11dcrawler/src/crawlerDB/DBConnect.java</file>
+            <file>file:/E:/Technical%20Program/NetBeans%208.1/NetBeansProjects/11dcrawler/src/crawlerUI/Window.java</file>
             <file>file:/E:/Technical%20Program/NetBeans%208.1/NetBeansProjects/11dcrawler/src/crawlerCore/Domain.java</file>
             <file>file:/E:/Technical%20Program/NetBeans%208.1/NetBeansProjects/11dcrawler/src/crawlerCore/Main.java</file>
             <file>file:/E:/Technical%20Program/NetBeans%208.1/NetBeansProjects/11dcrawler/src/crawlerCore/Page.java</file>
+            <file>file:/E:/Technical%20Program/NetBeans%208.1/NetBeansProjects/11dcrawler/src/crawlerDB/BatchStatement.java</file>
         </group>
     </open-files>
 </project-private>
